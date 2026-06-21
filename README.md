@@ -8,6 +8,10 @@ downgrades, the Batch API). You run one command, a local web server starts, and
 a dashboard opens at `http://localhost:4747`. Everything runs on your machine —
 no cloud, no accounts, no external database.
 
+<p align="center">
+  <img src="docs/images/clauditor-dashboard.jpg" alt="clauditor dashboard showing spend over time, breakdown by project, cache efficiency, and savings suggestions" width="800">
+</p>
+
 ## Safety posture
 
 clauditor is built to be trustworthy with your data:
