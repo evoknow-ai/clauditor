@@ -20,10 +20,11 @@ It is free to run and free to modify.
 
 1. [The CLI](#the-cli)
 2. [Reading the dashboard](#reading-the-dashboard)
-3. [How budgets work](#how-budgets-work)
-4. [How the savings suggestions work](#how-the-savings-suggestions-work)
-5. [Logging your own API calls](#logging-your-own-api-calls)
-6. [Updating `pricing.json`](#updating-pricingjson)
+3. [How clauditor discovers projects](#how-clauditor-discovers-projects)
+4. [How budgets work](#how-budgets-work)
+5. [How the savings suggestions work](#how-the-savings-suggestions-work)
+6. [Logging your own API calls](#logging-your-own-api-calls)
+7. [Updating `pricing.json`](#updating-pricingjson)
 
 ---
 
@@ -244,6 +245,57 @@ bar width is the fraction of budget used, and its color follows the level the
 server computes: **amber at 80%**, **red at 100%**. Each gauge shows
 `spend / budget (percent)`. If no budgets are configured, it shows
 "No budgets configured. Set them in config.json under "budgets"."
+
+---
+
+## How clauditor discovers projects
+
+clauditor keeps no list of projects. There is nothing to register and no
+`projects` array to maintain — every project you see on the dashboard is
+**derived from the data that was ingested**, not configured anywhere. A project
+exists because usage attributed to it landed in the database; it disappears from
+a view only when no events match the current filters.
+
+**Claude Code projects are automatic.** The Claude Code collector scans
+`~/.claude/projects/` (override with the `claude_code_path` config key), where
+Claude Code creates **one directory per project**. The project's real filesystem
+path is encoded into the directory name — path separators become `-`, so
+`/Users/you/projects/clauditor` becomes a directory named
+`-Users-you-projects-clauditor`. The collector globs `*/*.jsonl` under that root,
+so every project directory that has session history is picked up, and the project
+label is decoded from the directory name by `decode_project_name` (it returns the
+trailing path segment — `clauditor` in the example above). No setup is required:
+a project shows up on its own once it has local Claude Code session history.
+
+**API projects require labeling.** A raw Anthropic API response carries no
+project name, so clauditor cannot infer one. API-sourced spend appears **only**
+where you have wrapped your own calls with `log_usage`, passing the label
+explicitly:
+
+```python
+log_usage(response, project="my-rag-app")
+```
+
+The `project` you pass *is* the project name on the dashboard. This means
+**unwrapped API workloads are invisible to clauditor** — if you call the
+Anthropic API without `log_usage` (or the `track(...)` wrapper), that spend is
+not tracked at all. Don't assume your API usage shows up automatically; it only
+does where you instrumented it. (See
+[Logging your own API calls](#logging-your-own-api-calls) for the full
+signature and integration modes.)
+
+**Discovery happens at ingest time.** Projects appear when their data is
+ingested — by running `clauditor ingest`, or on `clauditor serve` when
+`ingest_on_serve` is enabled. A project you started using since the last ingest
+shows up **after the next ingest, not instantly**. Ingest is incremental: each
+session file is read from where it left off (by byte offset, skipping files whose
+mtime hasn't changed), so re-ingesting an existing project just appends its new
+sessions rather than re-reading everything.
+
+> Usage from the Claude apps (claude.ai web/desktop) and from other machines is
+> out of scope for the local collectors, which only read this machine's
+> `~/.claude` logs and your own `log_usage`-instrumented API calls — the optional
+> Admin API collector is what covers org-wide rollups.
 
 ---
 
