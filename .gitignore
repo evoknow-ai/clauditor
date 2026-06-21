@@ -1,0 +1,40 @@
+# clauditor local data — NEVER commit (contains real usage + spend history)
+data/clauditor.db
+data/*.db
+*.sqlite
+*.sqlite3
+
+# user config that may hold an admin API key
+config.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

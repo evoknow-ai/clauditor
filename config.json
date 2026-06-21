@@ -1,0 +1,15 @@
+{
+  "port": 4747,
+  "claude_code_path": null,
+  "currency": "USD",
+  "lookback_days": 30,
+  "ingest_on_serve": true,
+  "budgets": {
+    "global":  { "daily": null, "weekly": null, "monthly": 200 },
+    "projects": {}
+  },
+  "alert_fractions": [0.8, 1.0],
+  "alert_webhook_url": null,
+  "desktop_notifications": true,
+  "admin_api": { "enabled": false, "key_env": "ANTHROPIC_ADMIN_KEY" }
+}

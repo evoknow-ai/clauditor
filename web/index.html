@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>clauditor</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- Chart.js from CDN (no build step, SPEC.md §10). -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- 1. Header bar (SPEC.md §10) -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">clauditor</span>
+      <span class="tagline">Claude token &amp; spend dashboard</span>
+    </div>
+
+    <div class="controls">
+      <div class="control-group" role="group" aria-label="Date range presets">
+        <button class="preset" data-range="7">7d</button>
+        <button class="preset" data-range="30">30d</button>
+        <button class="preset" data-range="90">90d</button>
+        <button class="preset" data-range="all">All</button>
+      </div>
+
+      <div class="control-group custom-range">
+        <label>From <input type="date" id="from-date" /></label>
+        <label>To <input type="date" id="to-date" /></label>
+        <button id="apply-custom">Apply</button>
+      </div>
+
+      <label class="control-group project-filter">
+        Project
+        <select id="project-filter">
+          <option value="">All projects</option>
+        </select>
+      </label>
+
+      <span id="pricing-badge" class="pricing-badge" title="Pricing data date">
+        pricing updated: &hellip;
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <!-- 2. Summary cards (SPEC.md §10) -->
+    <section class="cards" id="summary-cards" aria-label="Summary">
+      <div class="card" id="card-spend">
+        <div class="card-label">Total spend</div>
+        <div class="card-value skeleton" id="val-spend">&nbsp;</div>
+      </div>
+      <div class="card" id="card-tokens">
+        <div class="card-label">Total tokens</div>
+        <div class="card-value skeleton" id="val-tokens">&nbsp;</div>
+      </div>
+      <div class="card" id="card-calls">
+        <div class="card-label">Calls</div>
+        <div class="card-value skeleton" id="val-calls">&nbsp;</div>
+      </div>
+      <div class="card card-prominent" id="card-cache">
+        <div class="card-label">Cache efficiency</div>
+        <div class="card-value skeleton" id="val-cache">&nbsp;</div>
+      </div>
+    </section>
+
+    <!-- 3. Spend over time (SPEC.md §10) -->
+    <section class="panel" aria-label="Spend over time">
+      <div class="panel-head">
+        <h2>Spend over time</h2>
+        <span class="panel-note">stacked by model</span>
+      </div>
+      <div class="chart-wrap">
+        <div class="placeholder" id="timeseries-placeholder">Loading&hellip;</div>
+        <canvas id="timeseries-chart" hidden></canvas>
+      </div>
+      <p class="empty-note" id="timeseries-empty" hidden>No usage in this range.</p>
+    </section>
+
+    <!-- 4. Breakdown (SPEC.md §10) -->
+    <section class="panel" aria-label="Breakdown">
+      <div class="panel-head">
+        <h2>Breakdown</h2>
+        <div class="control-group" role="group" aria-label="Breakdown dimension">
+          <button class="bk-toggle" data-by="project">By project</button>
+          <button class="bk-toggle" data-by="model">By model</button>
+          <button class="bk-toggle" data-by="source">By source</button>
+        </div>
+      </div>
+      <div class="breakdown-body">
+        <div class="chart-wrap breakdown-chart">
+          <div class="placeholder" id="breakdown-placeholder">Loading&hellip;</div>
+          <canvas id="breakdown-chart" hidden></canvas>
+        </div>
+        <div class="table-wrap">
+          <table id="breakdown-table">
+            <thead>
+              <tr><th>Key</th><th class="num">Spend</th><th class="num">Tokens</th><th class="num">Calls</th></tr>
+            </thead>
+            <tbody id="breakdown-tbody"></tbody>
+          </table>
+          <p class="empty-note" id="breakdown-empty" hidden>No usage in this range.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Suggestions feed (SPEC.md §10 item 5) -->
+    <section class="panel" aria-label="Savings suggestions">
+      <div class="panel-head">
+        <h2>Savings suggestions</h2>
+        <span class="panel-note">estimated monthly savings</span>
+      </div>
+      <div class="suggestions-wrap">
+        <div class="placeholder static-placeholder" id="suggestions-placeholder">Loading&hellip;</div>
+        <div class="suggestions-list" id="suggestions-list"></div>
+        <p class="empty-note" id="suggestions-empty" hidden>
+          No savings suggestions for this range. Nice and efficient.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6. Budget gauges (SPEC.md §10 item 6) -->
+    <section class="panel" aria-label="Budget gauges">
+      <div class="panel-head">
+        <h2>Budgets</h2>
+        <span class="panel-note">amber at 80%, red at 100%</span>
+      </div>
+      <div class="budgets-wrap">
+        <div class="placeholder static-placeholder" id="budgets-placeholder">Loading&hellip;</div>
+        <div class="budgets-list" id="budgets-list"></div>
+        <p class="empty-note" id="budgets-empty" hidden>
+          No budgets configured. Set them in config.json under "budgets".
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/main.js"></script>
+</body>
+</html>

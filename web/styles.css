@@ -1,0 +1,302 @@
+/* clauditor dashboard styles (SPEC.md §10): clean utility styling, dark mode. */
+
+:root {
+  --bg: #11151c;
+  --panel: #1a2029;
+  --panel-2: #222b38;
+  --border: #2c3645;
+  --text: #e6ebf2;
+  --muted: #8a97a8;
+  --accent: #4f8cff;
+  --accent-2: #38d39f;
+  --amber: #f5b740;
+  --red: #ef5350;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* --- Header bar --- */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.tagline { color: var(--muted); font-size: 12px; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.control-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+button:hover { background: #2b3645; }
+button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+input[type="date"], select {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+label { color: var(--muted); font-size: 12px; display: inline-flex; gap: 5px; align-items: center; }
+
+.pricing-badge {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+.pricing-badge.stale {
+  color: #1a1300;
+  background: var(--amber);
+  border-color: var(--amber);
+  font-weight: 600;
+}
+
+/* --- Layout --- */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* --- Summary cards --- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.card-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }
+.card-value { font-size: 28px; font-weight: 700; margin-top: 8px; }
+.card-prominent {
+  border-color: var(--accent-2);
+  background: linear-gradient(180deg, #1a2029, #18261f);
+}
+.card-prominent .card-value { color: var(--accent-2); }
+
+/* --- Panels --- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.panel-head h2 { font-size: 16px; margin: 0; }
+.panel-note { color: var(--muted); font-size: 12px; }
+
+.chart-wrap { position: relative; min-height: 260px; }
+.breakdown-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.breakdown-chart { min-height: 260px; }
+
+@media (max-width: 760px) {
+  .breakdown-body { grid-template-columns: 1fr; }
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  background: repeating-linear-gradient(
+    90deg, transparent, transparent 12px, rgba(255,255,255,0.02) 12px, rgba(255,255,255,0.02) 24px
+  );
+  border-radius: 8px;
+}
+/* The `.placeholder` display:flex above outranks the UA `[hidden]{display:none}`
+ * rule, so the loading skeleton would stay painted on top of a rendered chart.
+ * Re-assert hidden here so `placeholder.hidden = true` actually removes it. */
+.placeholder[hidden] { display: none; }
+
+/* --- Table --- */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--panel-2); }
+
+.empty-note { color: var(--muted); font-size: 13px; padding: 10px 0; }
+.placeholder-panel { opacity: 0.85; }
+
+/* A non-absolute loading placeholder for the suggestions/budgets panels, which
+ * grow with content rather than filling a fixed-height chart box. Shares the
+ * `[hidden]{display:none}` clearing rule below. */
+.static-placeholder {
+  position: static;
+  inset: auto;
+  min-height: 48px;
+  padding: 14px 0;
+}
+
+/* --- 5. Suggestions feed --- */
+.suggestions-list { display: flex; flex-direction: column; gap: 12px; }
+.suggestion-card {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.suggestion-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.suggestion-title { font-weight: 600; font-size: 14px; }
+.suggestion-savings {
+  color: var(--green, #38d39f);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.suggestion-detail { color: var(--muted); font-size: 13px; margin: 8px 0 10px; line-height: 1.45; }
+.confidence {
+  display: inline-block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.conf-high { color: #38d39f; border-color: #38d39f; }
+.conf-medium { color: #f5b740; border-color: #f5b740; }
+.conf-low { color: #8a97a8; border-color: #8a97a8; }
+
+/* --- 6. Budget gauges --- */
+.budgets-list { display: flex; flex-direction: column; gap: 14px; }
+.budget-gauge {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+.budget-label { font-size: 13px; }
+.budget-bar {
+  height: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.budget-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.budget-fill.level-ok { background: #38d39f; }
+.budget-fill.level-amber { background: #f5b740; }
+.budget-fill.level-red { background: #ef5350; }
+.budget-meta {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .budget-gauge { grid-template-columns: 1fr; gap: 6px; }
+}
+
+/* --- Skeleton shimmer --- */
+.skeleton {
+  color: transparent !important;
+  background: linear-gradient(90deg, #232c39 25%, #2c3645 37%, #232c39 63%);
+  background-size: 400% 100%;
+  border-radius: 6px;
+  animation: shimmer 1.3s ease infinite;
+  min-width: 80px;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.error-banner {
+  background: #2a1717;
+  border: 1px solid var(--red);
+  color: #ffd5d5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+}

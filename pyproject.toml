@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clauditor"
+version = "0.1.0"
+description = "Local-first dashboard for Claude token usage and dollar spend."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+# The Anthropic SDK is only needed for the api_wrapper collector; the core tool
+# must run without it (SPEC.md §13).
+anthropic = ["anthropic>=0.40"]
+# plyer powers the OPTIONAL desktop budget-alert notification (SPEC.md §6.1). The
+# core tool must run without it -- core.analyzer lazy-imports it in a try/except
+# and degrades to a no-op when absent. The webhook delivery uses stdlib urllib
+# (no extra dep).
+notifications = ["plyer>=2.1"]
+# httpx is a test-only need: FastAPI's TestClient is built on it (SPEC.md §12).
+dev = ["pytest>=8.0", "httpx>=0.27"]
+
+[project.scripts]
+clauditor = "cli:main"
+
+[tool.setuptools]
+# Packages built so far. Extend this list as later phases land.
+packages = ["core", "collectors", "server", "clauditor"]
+# cli.py is a top-level module (not a package), exposed for the console script.
+py-modules = ["cli"]
+
+# Ship the static dashboard (web/) and the user-editable data files so the
+# installed package is servable (SPEC.md §7, §10, §13).
+[tool.setuptools.data-files]
+"clauditor/web" = ["web/index.html", "web/main.js", "web/styles.css"]
+
+[tool.setuptools.package-data]
+"*" = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
